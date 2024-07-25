@@ -2,7 +2,7 @@ package com.hfad.guessinggame.viewmodels
 
 import androidx.lifecycle.ViewModel
 
-open class GameViewModel: ViewModel() {
+class GameViewModel: ViewModel() {
     private val words = listOf("Android", "Activity", "Fragment")
     private val secretWord = words.random().uppercase()
     var secretWordDisplay = ""
