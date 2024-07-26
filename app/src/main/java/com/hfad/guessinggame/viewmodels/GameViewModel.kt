@@ -1,17 +1,31 @@
 package com.hfad.guessinggame.viewmodels
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class GameViewModel: ViewModel() {
+class GameViewModel : ViewModel() {
     private val words = listOf("Android", "Activity", "Fragment")
     private val secretWord = words.random().uppercase()
-    var secretWordDisplay = ""
     private var correctGuesses = ""
-    var incorrectGuesses = ""
-    var livesLeft = 8
+    private val _incorrectGuesses = MutableLiveData<String>("")
+    private val _secretWordDisplay = MutableLiveData<String>()
+    private val _livesLeft = MutableLiveData<Int>(8)
+    private val _gameOver = MutableLiveData<Boolean>(false)
+
+    // These properties will refer to the same MutableLiveData objects, but will be used only to read their values
+    val incorrectGuesses: LiveData<String>
+        get() = _incorrectGuesses
+    val secretWordDisplay: LiveData<String>
+        get() = _secretWordDisplay
+    val livesLeft: LiveData<Int>
+        get() = _livesLeft
+    val gameOver: LiveData<Boolean>
+        get() = _gameOver
+
 
     init {
-        secretWordDisplay = deriveSecretWordDisplay()
+        _secretWordDisplay.value = deriveSecretWordDisplay()
     }
 
     private fun deriveSecretWordDisplay(): String {
@@ -31,17 +45,18 @@ class GameViewModel: ViewModel() {
         if (guess.length == 1) {
             if (secretWord.contains(guess)) {
                 correctGuesses += guess
-                secretWordDisplay = deriveSecretWordDisplay()
+                _secretWordDisplay.value = deriveSecretWordDisplay()
             } else {
-                incorrectGuesses += "$guess "
-                livesLeft--
+                _incorrectGuesses.value += "$guess "
+                _livesLeft.value = livesLeft.value?.minus(1)
             }
+            if (isWon() || isLost()) _gameOver.value = true
         }
     }
 
-    fun isWon() = secretWord.equals(secretWordDisplay, true)
+    private fun isWon() = secretWord.equals(secretWordDisplay.value, true)
 
-    fun isLost() = livesLeft <= 0
+    private fun isLost() = (livesLeft.value ?: 0) <= 0
 
     fun resultMessage(): String {
         var message = ""
