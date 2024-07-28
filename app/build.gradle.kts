@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.androidx.navigation.safe.args.kotlin)
+    alias(libs.plugins.jetbrains.kotlin.kapt)
 }
 
 android {
@@ -29,7 +30,14 @@ android {
     }
 
     buildFeatures {
-        viewBinding = true
+        // We can delete this row because both layouts using viewBinding also use dataBinding.
+        // View binding and data binding generate the same binding classes,
+        // but view binding generates such a class for all layouts, even for MainActivity,
+        // which does not use a binding class.
+        // Data binding generates a binding class only for layouts that contain the <layout> tag
+
+        // viewBinding = true
+        dataBinding = true
     }
 
     compileOptions {

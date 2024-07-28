@@ -25,6 +25,7 @@ class GameFragment : Fragment() {
         val view = binding.root
 
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
+        binding.gameViewModel = viewModel
         observeLiveData(view)
 
         binding.guessButton.setOnClickListener {
@@ -49,15 +50,14 @@ class GameFragment : Fragment() {
         // so it's only active - and able to receive live data notifications - when the fragment has access to its views.
         // This stops the fragment from trying to update views when they're not available, which might cause the app to crash.
 
-        viewModel.secretWordDisplay.observe(
-            viewLifecycleOwner,
-            Observer { newValue -> binding.word.text = newValue })
-        viewModel.livesLeft.observe(
-            viewLifecycleOwner,
-            Observer { binding.lives.text = "You have $it lives left." })
-        viewModel.incorrectGuesses.observe(
-            viewLifecycleOwner,
-            Observer { binding.incorrectGuesses.text = "Incorrect guesses: $it" })
+        // When data binding is not enabled. The fragment is responsible for updating data in views.
+        // viewModel.secretWordDisplay.observe(
+        //     viewLifecycleOwner,
+        //     Observer { newValue -> binding.word.text = newValue })
+
+        // Lets the layout respond to live data updates
+        binding.lifecycleOwner = viewLifecycleOwner
+
         viewModel.gameOver.observe(
             viewLifecycleOwner,
             Observer {
