@@ -5,10 +5,35 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import com.hfad.guessinggame.R
 import com.hfad.guessinggame.databinding.FragmentGameBinding
+import com.hfad.guessinggame.ui.GuessingGameTheme
 import com.hfad.guessinggame.viewmodels.GameViewModel
 
 class GameFragment : Fragment() {
@@ -21,17 +46,20 @@ class GameFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentGameBinding.inflate(inflater, container, false)
+        _binding = FragmentGameBinding.inflate(inflater, container, false).apply {
+            composeView.setContent {
+                GuessingGameTheme {
+                    Surface {
+                        GameFragmentContent(viewModel)
+                    }
+                }
+            }
+        }
         val view = binding.root
 
         viewModel = ViewModelProvider(this).get(GameViewModel::class.java)
         binding.gameViewModel = viewModel
         observeLiveData(view)
-
-        binding.guessButton.setOnClickListener {
-            viewModel.makeGuess(binding.guess.text.toString().uppercase())
-            binding.guess.text = null
-        }
 
         return view
     }
@@ -68,5 +96,56 @@ class GameFragment : Fragment() {
                 }
             }
         )
+    }
+}
+
+@Composable
+fun GameFragmentContent(viewModel: GameViewModel) {
+    var guess by remember { mutableStateOf("") }
+
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        IncorrectGuessesText(viewModel = viewModel, modifier = Modifier.align(Alignment.Start))
+        EnterGuess(guess = guess, modifier = Modifier.align(Alignment.Start)) {
+            guess = it
+        }
+        GuessButton {
+            viewModel.makeGuess(guess.uppercase())
+            guess = ""
+        }
+    }
+}
+
+@Composable
+fun IncorrectGuessesText(viewModel: GameViewModel, modifier: Modifier = Modifier) {
+    val incorrectGuesses = viewModel.incorrectGuesses.observeAsState()
+
+    incorrectGuesses.value?.let {
+        Text(stringResource(id = R.string.incorrect_guesses, it), fontSize = 16.sp, modifier = modifier)
+    }
+}
+
+
+@Composable
+fun EnterGuess(guess: String, modifier: Modifier = Modifier, changed: (String) -> Unit) {
+    TextField(
+        value = guess,
+        placeholder = { Text("Guess a letter", fontSize = 26.sp) },
+        onValueChange = changed,
+        textStyle = TextStyle(fontSize = 26.sp),
+        singleLine = true,
+        modifier = modifier
+            .width(200.dp)
+            .padding(vertical = 16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface
+        )
+    )
+}
+
+@Composable
+fun GuessButton(clicked: () -> Unit) {
+    Button(onClick = clicked) {
+        Text("Guess!", fontSize = 20.sp, fontWeight = FontWeight.Bold)
     }
 }
