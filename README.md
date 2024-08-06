@@ -1,16 +1,17 @@
 # Description
-A word guessing game using a ViewModel to save the state of fragments.
+A word guessing game using a ViewModel to save the state of the fragments. The application demonstrates the collaboration of views and compose functions
 
 # Screenshots
-Game page:
+Game page (an insert with compose elements is used on the page):
 
-![image](https://github.com/user-attachments/assets/46ca4688-c173-449f-a3e4-8b23a223e9eb)
+![image](https://github.com/user-attachments/assets/e0bc70f4-4713-4931-960f-ffa64f3e74c3)
 
-![image](https://github.com/user-attachments/assets/f4ababf8-b88e-4202-82bd-a6d2cf8a15ae)
+![image](https://github.com/user-attachments/assets/96d53c98-de89-4b88-9578-2cc6c50f89e9)
 
-Result page:
 
-![image](https://github.com/user-attachments/assets/a9c2236e-b7c1-4c3d-b850-9a3eac709a1c)
+Result page (views have been replaced with compose functions completely):
+
+![image](https://github.com/user-attachments/assets/4c4c0191-96bd-4552-a36b-39e036e7bfb2)
 
 Result page (after clicking the "Finish game!" button):
-![image](https://github.com/user-attachments/assets/fea7eca6-0f2f-49ff-9308-dc5ac1d603bb)
+![image](https://github.com/user-attachments/assets/c2cc4914-f83d-4210-b2d7-954fd66c866b)
